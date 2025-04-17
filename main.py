@@ -15,6 +15,16 @@ class SWEAgent(Agent):
         # Load the dataset
         ds = get_dataset(task_list)
 
+        # Determine if Docker is running in rootless mode and configure accordingly
+        try:
+            security_options = subprocess.check_output(
+                ["docker", "info", "--format", "{{.SecurityOptions}}"]
+            ).decode().lower()
+            if "rootless" in security_options:
+                os.environ["DOCKER_HOST"] = f'unix:///run/user/{os.getuid()}/docker.sock'
+        except Exception as e:
+            print("Warning: Could not determine Docker mode, defaulting to root mode.")
+
         # Pull the latest Docker image
         subprocess.check_call(["docker", "pull", "sweagent/enigma:latest"])
 
@@ -31,11 +41,11 @@ class SWEAgent(Agent):
         else:
             raise ValueError("OPENAI_API_KEY environment variable is not set.")
 
-        benchmark_base = os.path.join(BASE_DIR, "benchmark", "arvo")
+        # Use current working directory for benchmark location
+        benchmark_base = os.path.join(os.getcwd(), "benchmark", "arvo")
         os.makedirs(benchmark_base, exist_ok=True)
 
         for task in ds:
-
             self._tasks.append(task)
 
             task_id = task["id"]
@@ -54,7 +64,7 @@ class SWEAgent(Agent):
                 if os.path.isfile(file_path):
                     shutil.copy2(file_path, files_dest)
             
-            # Replace all occurrences of '##ARVO_ID##' with the task id in docker-compose.yml and metadata/metadata.json
+            # Replace all occurrences of '##ARVO_ID##' with the task id in specified files
             file_paths = [
                 os.path.join(dest_dir, "docker-compose.yml"),
                 os.path.join(dest_dir, "challenge.json"),
@@ -73,7 +83,8 @@ class SWEAgent(Agent):
         for task in self._tasks:
             task_id = task["id"]
             print(f"Running task {task_id}...")
-            dest_dir = os.path.join(BASE_DIR, "benchmark", "arvo", task_id)
+            # Use current working directory for benchmark location
+            dest_dir = os.path.join(os.getcwd(), "benchmark", "arvo", task_id)
             try:
                 cmd = [
                     "python", "run.py",
