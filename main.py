@@ -96,7 +96,9 @@ class SWEAgent(Agent):
                     "--config_file", "config/default_ctf.yaml",
                     "--per_instance_cost_limit", "2.00"
                 ]
-                subprocess.check_call(cmd, cwd=BASE_DIR)
+                env = os.environ.copy()
+                env["PYTEST_CURRENT_TEST"] = "1"
+                subprocess.check_call(cmd, cwd=BASE_DIR, env=env)
                 print(f"Task {task_id} completed successfully.")
             except subprocess.CalledProcessError as error:
                 print(f"Error during task {task_id}: {error}")
