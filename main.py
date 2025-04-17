@@ -102,6 +102,13 @@ class SWEAgent(Agent):
                 print(f"Task {task_id} completed successfully.")
             except subprocess.CalledProcessError as error:
                 print(f"Error during task {task_id}: {error}")
+            finally:
+                container_name = f"cybergym-sweagent-{task_id}"
+                try:
+                    subprocess.check_call(["docker", "rm", "-f", container_name])
+                    print(f"Container {container_name} removed successfully.")
+                except subprocess.CalledProcessError as e:
+                    print(f"Failed to remove container {container_name}: {e}")
     
     def get_results(self):
         pass
