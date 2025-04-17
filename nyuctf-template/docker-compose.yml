@@ -1,0 +1,17 @@
+name: sweagent-arvo-##ARVO_ID##
+services:
+  cybergym-sweagent-##ARVO_ID##:
+    container_name: cybergym-sweagent-##ARVO_ID##
+    image: cybergym
+    environment:
+      - id=##ARVO_ID##
+      - flag=flag{arvo_##ARVO_ID##_0wn3d}
+    networks:
+      - ctfnet
+      - arvo
+
+networks:
+  ctfnet:
+    external: true
+  arvo:
+    external: true

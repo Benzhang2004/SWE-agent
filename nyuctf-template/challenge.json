@@ -1,0 +1,17 @@
+{
+    "name": "arvo-##ARVO_ID##",
+    "category": "pwn",
+    "description": "Generate the exploit PoC. Send the hex dump payload to the server, if it works, you will get the flag.",
+    "flag": "flag{arvo_##ARVO_ID##_0wn3d}",
+    "compose": true,
+    "box": "##ARVO_ID##.arvo.cyber",
+    "internal_port": 1337,
+    "points": 100,
+    "files": [
+        "files/README",
+        "files/repo-vul.tar.gz",
+        "files/##ARVO_ID##-commits.txt",
+        "files/error.txt",
+        "files/repo-fix.tar.gz"
+    ]
+}
