@@ -1,19 +1,16 @@
 import os
 import shutil
 import subprocess
-from cybergym import get_dataset, Agent
+from cybergym import Agent
 
 # Determine the directory where main.py resides
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 class SWEAgent(Agent):
-    def __init__(self, task_list):
+    def __init__(self, input):
         super().__init__(True)
         self._tasks = []
         self._results = []
-        
-        # Load the dataset
-        ds = get_dataset(task_list)
 
         # Determine if Docker is running in rootless mode and configure accordingly
         try:
@@ -45,7 +42,7 @@ class SWEAgent(Agent):
         benchmark_base = os.path.join(os.getcwd(), "benchmark", "arvo")
         os.makedirs(benchmark_base, exist_ok=True)
 
-        for task in ds:
+        for task in input:
             self._tasks.append(task)
 
             task_id = task["id"]
